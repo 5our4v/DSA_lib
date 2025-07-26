@@ -1,6 +1,6 @@
 
 #ignore vs code 
-.vscode
+.vscode/
 # Prerequisites
 *.d
 
