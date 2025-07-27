@@ -199,5 +199,20 @@ LL_node *LL_del_end(LL_node **head_ref){
 }
 
 void LL_peek(LL_node **head_ref){
-    
+    if(*head_ref==NULL){
+        printf("[Null]");
+        return;
+    }
+    else{
+        LL_node *temp=*head_ref;
+        while (temp!=NULL)
+        {
+            printf("[%p]->", (void *)temp->tree_node_add);
+            temp=temp->next;
+        }
+        printf("Null\n");
+    }
 }
+
+
+//next task add que 
