@@ -22,7 +22,7 @@ typedef struct tree_node
 }Tree_node;
 
 
-/*---------------------------linked list part---------------------------- */
+/*---------------------------Address linked list part---------------------------- */
 
 //creating  linkedlist node 
 
@@ -131,5 +131,73 @@ LL_node *LL_del_beg(LL_node**head_ref){
     }
     temp->prev=NULL;
     temp->next=NULL;
-    return temp;
+    return temp; //return the deleted linkedlist node  
+}
+
+
+
+LL_node *LL_del_at(LL_node** haead_ref,int pos ){
+    //condittion for emptylist
+    if(*haead_ref==NULL){
+        printf("list is already empty!");
+        return NULL;
+    }
+    //contains single node 
+    if(pos==0){
+        return LL_del_beg(haead_ref);
+    }
+    //invalid position
+    if(pos<0||pos>LL_len(haead_ref)){
+        printf("Invalid position!");
+        return NULL;
+    }
+    //Deleting node 
+    LL_node *temp=*haead_ref;
+    for(int i=0;i<pos && temp!=NULL;i++){ //traversing to pos-1
+        temp=temp->next;
+    }
+    //safegurd
+    if(temp==NULL){return NULL;}
+
+    //linking and updating 
+    if(temp->prev!=NULL){  
+        temp->prev->next=temp->next;
+    }
+    if(temp->next!=NULL){
+        temp->next->prev=temp->prev;
+    }
+    temp->prev=NULL;
+    temp->next=NULL;
+    return temp; //return the isolated  linkedlist node 
+}
+
+LL_node *LL_del_end(LL_node **head_ref){
+    //empty list 
+    if(*head_ref==NULL){
+        printf("Empty list");
+        return NULL;
+    }
+    LL_node *temp=*head_ref; //holding the Head pointer 
+    //traversal 
+    while (temp->next!=NULL)
+    {   
+        temp=temp->next;
+        
+    }
+    //update links 
+    if(temp->prev!=NULL){
+        temp->prev->next=NULL; //temp is isolated 
+    }
+    else{
+        *head_ref=NULL; //incase the list contains one node only 
+    }
+
+    temp->prev=NULL;
+    temp->next=NULL;
+    return temp;//return the isolated linkedlist node 
+
+}
+
+void LL_peek(LL_node **head_ref){
+    
 }
