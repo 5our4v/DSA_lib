@@ -225,13 +225,13 @@ void enqueue(LL_node **head_ref,Tree_node *tree_node_add){
     }
 }
 
-Tree_node* dequeue(LL_node**head_ref){
+LL_node* dequeue(LL_node**head_ref){
     if(*head_ref==NULL){
         printf("Empty Queue!");
     }
     else{
-        Tree_node* temp_tn=LL_del_beg(head_ref);
-        return temp_tn;
+        LL_node* temp_LL_node=LL_del_beg(head_ref);
+        return temp_LL_node;
     }
 }
 
@@ -249,26 +249,26 @@ Tree_node *create_tree_node(int data){
     new_tree_node->parent_node_add=NULL;
     new_tree_node->data=data;
     new_tree_node->Child_LL_head_ref=NULL;
+    return new_tree_node;
 
 }
-typedef enum{
-    root,
-    tree_node
-}node_type;
 
-void add_tree_node( node_type tree_node,int data ){
-    switch (tree_node)
-    {
-    case root:{
-        Tree_node*new_tree_node=create_tree_node(data);
-        
-
-    }
-
-        
-       
+// creation of tree 
+void add_root(LL_node**LL_head_ref,LL_node**Q_head_ref){ 
+    printf("Input the tree node value : ");
+    int data=0;
+    scanf("%d",&data);
+    Tree_node *new_tree_node=create_tree_node(data);
+    enqueue(Q_head_ref,create_tree_node); //root tree node add is pushed to Queue
+    add_child(LL_head_ref,Q_head_ref,&new_tree_node);
     
-    default:
-        break;
-    }
+
+}
+
+void add_child(LL_node **LL_head_ref,LL_node **Q_head_ref,LL_node**parent_node_add){
+
+    printf("Input the child node value : ");
+    int data=0;
+    scanf("%d",&data);
+    //double while loop will be used to create treee 
 }
