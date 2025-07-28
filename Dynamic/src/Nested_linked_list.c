@@ -15,9 +15,9 @@ typedef struct linked_list_node {
 //treee node structre  
 typedef struct tree_node
 {
-    struct tree_node *parent_add;
+    struct tree_node *parent_node_add;
     int data;
-    LL_node *Child_LL_head_ptr;
+    LL_node *Child_LL_head_ref;
     
 }Tree_node;
 
@@ -215,4 +215,60 @@ void LL_peek(LL_node **head_ref){
 }
 
 
-//next task add que 
+// Address Queue part 
+void enqueue(LL_node **head_ref,Tree_node *tree_node_add){
+    if (*head_ref==NULL){
+        LL_add_beg(head_ref,tree_node_add);
+    }
+    else{
+        LL_add_end(head_ref,tree_node_add);
+    }
+}
+
+Tree_node* dequeue(LL_node**head_ref){
+    if(*head_ref==NULL){
+        printf("Empty Queue!");
+    }
+    else{
+        Tree_node* temp_tn=LL_del_beg(head_ref);
+        return temp_tn;
+    }
+}
+
+
+
+//Tree part :
+
+Tree_node *create_tree_node(int data){
+    
+    Tree_node *new_tree_node=(Tree_node*)malloc(sizeof(Tree_node));
+    if(!new_tree_node){
+        printf("Memory allocation for tree node failed");
+        exit(1);
+    }
+    new_tree_node->parent_node_add=NULL;
+    new_tree_node->data=data;
+    new_tree_node->Child_LL_head_ref=NULL;
+
+}
+typedef enum{
+    root,
+    tree_node
+}node_type;
+
+void add_tree_node( node_type tree_node,int data ){
+    switch (tree_node)
+    {
+    case root:{
+        Tree_node*new_tree_node=create_tree_node(data);
+        
+
+    }
+
+        
+       
+    
+    default:
+        break;
+    }
+}
