@@ -62,9 +62,8 @@ void LL_add_end(LL_node **head_ref, Tree_node *tree_node_add) {
     }
 }
 
-/* ============================
-   Tree Functions
-   ============================ */
+// Tree part 
+
 Tree_node *create_tree_node(int data) {
     Tree_node *node = (Tree_node *)malloc(sizeof(Tree_node));
     if (!node) {
@@ -152,9 +151,7 @@ Tree_node *get_root() {
     return NULL;
 }
 
-/* ============================
-   Menu Driven Main
-   ============================ */
+
 int main() {
     int choice, parent_data, data;
     while (1) {
