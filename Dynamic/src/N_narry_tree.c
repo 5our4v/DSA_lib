@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 
-
+typedef struct tree_node Tree_node;
 //Linked list node :
 typedef struct  link_list_node{
     struct link_list_node *prev;
@@ -109,6 +109,7 @@ if(global_addr_list_head==NULL){
     Tree_node *root_node=create_tree_node(child_data); //creating the root tree node 
     LL_add_beg(&global_addr_list_head,root_node);
     printf("Root created %d\n",child_data);
+    return;
 }
 
 //if the root node already present 
@@ -127,12 +128,26 @@ else{
     LL_add_end(&global_addr_list_head,child_tree_node);
 
     //using p_addr->child_LL_head_ref  as a head pointer to a  new linked list which contains the address of child tree node unde the parrent node 
-    LL_add_end(&p_addr->child_ll_head_ref,child_tree_node);
+    LL_add_end(&p_addr->child_ll_head_ref,child_tree_node); //creating another linklist contains child_tree_node addresses
     }
 }
 
+
+
+//get root tree node  addr 
+Tree_node *get_root(){
+    if(global_addr_list_head){
+        return global_addr_list_head->tree_node_addr;
+    }
+    return NULL;
+}
+
+
+
+
+
 //print the tree 
-void print_tree(Tree_node *tn ,int level ,int last ){
+void print_tree(Tree_node *tn ,int level ){
     if (tn==NULL){
         return;
     }
@@ -141,11 +156,81 @@ void print_tree(Tree_node *tn ,int level ,int last ){
     if(level>0){
         for(int i=0;i<level-1;i++){
             printf("|   ");
-
-            if(last){
-                printf("|--");
-            }
-        }
+        }     
+        printf("|->");   
     }
 
+    //print data
+    printf("%d\n",tn->data);
+
+    //recurse for child nodes
+    LL_node *children =tn->child_ll_head_ref;
+    while (children)
+    {
+        print_tree(children->tree_node_addr,level + 1);
+        children=children->next;
+    }
+    
+}
+
+
+//Main 
+
+int main() {
+    int choice, parent_data, data;
+    while (1) {
+        system("cls");
+        print_tree(get_root(), 0);
+        printf("\nN-ary Tree Menu\n");
+        printf("1. Add root\n");
+        printf("2. Add child\n");
+        printf("3. Print tree\n");
+        printf("4. Exit\n");
+        printf("Enter choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                if (global_addr_list_head != NULL) {
+                    printf("Root already exists!\n");
+                    break;
+                }
+                printf("Enter root data: ");
+                scanf("%d", &data);
+                add_node(-1, data);
+                break;
+
+            case 2:
+                if (global_addr_list_head == NULL) {
+                    printf("Create root first!\n");
+                    break;
+                }
+                printf("Enter parent data: ");
+                scanf("%d", &parent_data);
+                printf("Enter child data: ");
+                scanf("%d", &data);
+                add_node(parent_data, data);
+                break;
+
+            case 3:
+                if (global_addr_list_head == NULL) {
+                    printf("Tree is empty!\n");
+                    break;
+                }
+                printf("\nTree structure:\n");
+                print_tree(get_root(), 0);
+                break;
+
+            case 4:
+                printf("Exiting...\n");
+                return 0;
+
+            default:
+                printf("Invalid choice!\n");
+        }
+        // Wait for user
+        printf("\nPress Enter to continue...");
+        getchar(); // flush newline
+        getchar(); // wait for Enter
+    }
 }
