@@ -144,6 +144,20 @@ Tree_node *get_root(){
 
 
 
+/*Traversal type: Pre-order depth-first traversal.
+
+Step 1: Start with a node (usually the root).
+
+Step 2: Print the current node’s data.
+
+Step 3: Recursively call print_tree for the first child, printing that child’s entire subtree.
+
+Step 4: After finishing one child’s subtree, move to the next sibling.
+
+Step 5: Repeat until all children and their subtrees are processed.
+
+Note: The level parameter is used to control indentation for visualizing the tree hierarchy.*/
+
 
 
 //print the tree 
@@ -163,7 +177,7 @@ void print_tree(Tree_node *tn ,int level ){
     //print data
     printf("%d\n",tn->data);
 
-    //recurse for child nodes
+    //recurse for child nodes 
     LL_node *children =tn->child_ll_head_ref;
     while (children)
     {
