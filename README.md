@@ -5,14 +5,12 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
 
-**cUtil** is a collection of reusable, highly-optimized utility functions and data structures designed to simplify development in C. It aims to reduce boilerplate code and provide safe, reliable implementations for common programming tasks.
+**cUtil** is a collection of reusable, data structures designed to simplify development in C. It aims to reduce boilerplate code and provide safe, reliable implementations for common programming tasks.
 
 ## ✨ Features
 
-* **Data Structures:** [e.g., Dynamic arrays, linked lists, hash maps, etc.]
-* **String Manipulation:** Enhanced and safe string handling utilities.
+* **Data Structures:** Linked List, Stack , Queues, Tree, Graph.
 * **Memory Management:** Wrappers for safe allocation, deallocation, and leak detection.
-* **File I/O:** Simplified interfaces for reading, writing, and parsing files.
 * **Lightweight:** Zero dependencies other than the standard C library.
 
 ## 📂 Project Structure
