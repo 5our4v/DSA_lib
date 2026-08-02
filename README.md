@@ -13,13 +13,4 @@
 * **Memory Management:** Wrappers for safe allocation, deallocation, and leak detection.
 * **Lightweight:** Zero dependencies other than the standard C library.
 
-## 📂 Project Structure
 
-```text
-cUtil/
-├── src/          # Source files (.c)
-├── include/      # Header files (.h)
-├── tests/        # Unit tests for the utility functions
-├── examples/     # Example programs demonstrating usage
-├── Makefile      # Build instructions
-└── README.md     # Project documentation
