@@ -1,9 +1,27 @@
-#  Data Structures & Algorithms in C
+# cUtil 🛠️
 
-This repository contains implementations of fundamental **Data Structures and Algorithms (DSA)** using the **C programming language**. All code is self-written, modular, and organized with custom header files and source files using a clean directory structure.
+> A lightweight, efficient, and modular utility library for C/C++ projects.
 
-## 📁 Folder Structure
-    ├── src/           # C source files for data structures and algorithms
-    ├── include/       # Header files (.h) containing declarations
-    ├── bin/           # Compiled binaries (.exe  files)
-    └── README.md      # Project documentation
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
+
+**cUtil** is a collection of reusable, highly-optimized utility functions and data structures designed to simplify development in C. It aims to reduce boilerplate code and provide safe, reliable implementations for common programming tasks.
+
+## ✨ Features
+
+* **Data Structures:** [e.g., Dynamic arrays, linked lists, hash maps, etc.]
+* **String Manipulation:** Enhanced and safe string handling utilities.
+* **Memory Management:** Wrappers for safe allocation, deallocation, and leak detection.
+* **File I/O:** Simplified interfaces for reading, writing, and parsing files.
+* **Lightweight:** Zero dependencies other than the standard C library.
+
+## 📂 Project Structure
+
+```text
+cUtil/
+├── src/          # Source files (.c)
+├── include/      # Header files (.h)
+├── tests/        # Unit tests for the utility functions
+├── examples/     # Example programs demonstrating usage
+├── Makefile      # Build instructions
+└── README.md     # Project documentation
