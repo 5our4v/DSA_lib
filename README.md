@@ -1,17 +1,77 @@
-# cUtil — Generic C Data Structures Library
+<div align="center">
 
-> 🚧 **Beta / hobby project.** Built for Learning the underlying implementation of  Data structures
-— APIs may still
-> change, and some corners are rough. Parts of this codebase were written
-> with help from Claude (Anthropic's AI assistant). It's open source under
-> the MIT License — **forks and contributions are very welcome**, however
-> small.
+# cUtil
 
-A small, dependency-free C library that implements a **linked list, stack,
-queue, tree, and graph** on top of one shared, generically-typed node. Every
-structure can hold `int`, `float`, `char`, `string`, or raw `pointer` data
-through a single tagged union, so you don't rewrite the same list logic five
-times for five different types.
+**Generic C data structures — one node type, five structures.**
+
+A small, dependency-free C library implementing a **linked list, stack, queue, tree, and graph**
+on top of one shared, generically-typed node.
+
+<br>
+
+![C11](https://img.shields.io/badge/C-C11-00599C?style=flat-square&logo=c&logoColor=white)
+![License](https://img.shields.io/badge/license-MIT-1a1a1a?style=flat-square)
+![Status](https://img.shields.io/badge/status-beta-e07b39?style=flat-square)
+![Dependencies](https://img.shields.io/badge/dependencies-none-2f9e44?style=flat-square)
+![PRs Welcome](https://img.shields.io/badge/PRs-welcome-6d28d9?style=flat-square)
+
+<br>
+
+[Quick start](#quick-start) ·
+[Core concepts](#core-concepts) ·
+[Linked list](#linked-list) ·
+[Queue](#queue-fifo) ·
+[Stack](#stack-lifo) ·
+[Tree](#tree) ·
+[Graph](#graph) ·
+[Memory](#memory-ownership-notes)
+
+</div>
+
+---
+
+> [!IMPORTANT]
+> **Beta / hobby project.** Built for learning the underlying implementation of data structures — APIs may still change, and some corners are rough. Parts of this codebase were written with help from Claude (Anthropic's AI assistant). It's open source under the MIT License — **forks and contributions are very welcome**, however small.
+
+Every structure can hold `int`, `float`, `char`, `string`, or raw `pointer` data through a single
+tagged union, so you don't rewrite the same list logic five times for five different types.
+
+<div align="center">
+
+```mermaid
+graph TD
+    N["<b>LLnode</b><br/><i>tagged value + left/right links</i>"]
+    N --> L["<b>Linked List</b><br/>insert · delete · sort"]
+    N --> Q["<b>Queue</b><br/>FIFO"]
+    N --> S["<b>Stack</b><br/>LIFO"]
+    N --> G["<b>GNode</b><br/><i>neighbors = an LLnode list</i>"]
+    G --> T["<b>Tree</b><br/>neighbors = children"]
+    G --> GR["<b>Graph</b><br/>neighbors = edges"]
+
+    style N fill:#eff6ff,stroke:#1d4ed8,stroke-width:2px
+    style G fill:#fffbeb,stroke:#b45309,stroke-width:2px
+    style L fill:#ffffff,stroke:#333
+    style Q fill:#ffffff,stroke:#333
+    style S fill:#ffffff,stroke:#333
+    style T fill:#ffffff,stroke:#333
+    style GR fill:#ffffff,stroke:#333
+```
+
+<sub>Write the node once. Everything else is a convention layered on top of it.</sub>
+
+</div>
+
+---
+
+## At a glance
+
+| Structure | Shape | Add | Remove | Holds |
+|---|---|---|---|---|
+| **Linked list** | doubly linked, both-ways traversal | anywhere | anywhere | any `DataType` |
+| **Queue** | same list, FIFO discipline | back | front | any `DataType` |
+| **Stack** | same list, LIFO discipline | top | top | any `DataType` |
+| **Tree** | N-ary, one parent per node | under a parent | manual | any `DataType` |
+| **Graph** | directed or undirected, cycles OK | edges | manual | any `DataType` |
 
 ---
 
@@ -84,6 +144,17 @@ typedef union {
 } Data;
 ```
 
+A union gives every member the *same* bytes — so exactly one is valid at a time, and the
+`DataType` tag is what tells you which:
+
+```
+      d.i_val ──┐
+      d.f_val ──┤
+      d.c_val ──┼──►  ┌────────────────────┐
+      d.s_val ──┤     │  one block of bytes │   ← only ONE is valid at a time
+      d.p_val ──┘     └────────────────────┘      the DataType tag says which
+```
+
 You rarely build a `Data` by hand — use the helpers instead:
 
 | Function | Builds a `Data` holding... |
@@ -117,6 +188,16 @@ typedef struct LLnode {
 } LLnode;
 ```
 
+Every node knows both of its neighbours, so you can walk in either direction:
+
+```
+          ┌───────┬───────────────┬───────┐   ┌───────┬───────────────┬───────┐
+ NULL ◄───┤ left  │  5 · TYPE_INT │ right ├──►┤ left  │ 10 · TYPE_INT │ right ├───► NULL
+          └───────┴───────────────┴───────┘◄──┴───────┴───────────────┴───────┘
+             ▲
+             └── your `head` pointer
+```
+
 `LL_END` is a sentinel value (`-1`) meaning "no position given — insert at
 the end."
 
@@ -132,8 +213,18 @@ the end."
 | `void ll_sort(LLnode **head_ref)` | In-place ascending merge sort, O(n log n). Assumes the list is homogeneous (every node the same `DataType`). |
 | `void ll_free_list(LLnode **head_ref)` | Frees every node (and any owned strings), resets head to `NULL`. |
 
-If you pop a `TYPE_STR` node, you now own that string and must `free()` it
-yourself once you're done with it.
+> [!NOTE]
+> If you pop a `TYPE_STR` node, you now own that string and must `free()` it yourself once you're done with it.
+
+<div align="center"><sub>— one insert function, three behaviours —</sub></div>
+
+```
+ll_add(&list, t, v, LL_END)      ll_add(&list, t, v, 0)       ll_add(&list, t, v, 2)
+
+  [ 5 ][ 10 ][ 20 ]                [ 5 ][ 10 ][ 20 ]            [ 5 ][ 10 ][ 20 ]
+                ╰──► [ new ]        [ new ] ◄──╯                       ╰──► [ new ] ──► [ 20 ]
+       appends at the end            prepends at index 0         inserts at index 2, rest shifts right
+```
 
 ### Example
 
@@ -196,15 +287,22 @@ front, first in, first out. Good for anything that processes work in the
 order it arrived: a print spooler, a task queue, BFS traversal (which is
 exactly how the graph functions below use it internally).
 
+```
+   dequeue ◄──── ┌────────┬────────┬────────┬────────┐ ◄──── enqueue
+    (front)      │   A    │   B    │   C    │   D    │        (rear)
+                 └────────┴────────┴────────┴────────┘
+                     ▲                          ▲
+              waiting longest              just arrived
+```
+
 | Function | What it does |
 |---|---|
 | `void enqueue(LLnode **head_ref, DataType type, Data value)` | Adds to the back of the queue. |
 | `Data dequeue(LLnode **head_ref, DataType *type_out)` | Removes and returns the item at the front (the one that's been waiting longest). |
 | `void display_queue(LLnode **head_ref)` | Prints: `Front -> [1, 2, 3] -> Rear`. |
 
-Under the hood `enqueue`/`dequeue` are just `ll_add(..., LL_END)` and
-`ll_pop_beg` — so `ll_len`, `ll_peek`, and `ll_free_list` all work on a queue
-too.
+> [!TIP]
+> Under the hood `enqueue`/`dequeue` are just `ll_add(..., LL_END)` and `ll_pop_beg` — so `ll_len`, `ll_peek`, and `ll_free_list` all work on a queue too.
 
 ### Example
 
@@ -251,6 +349,16 @@ Same list, opposite end convention — both push and pop happen at the back
 first one out. Good for undo history, expression evaluation, backtracking,
 or DFS (which is exactly how the graph functions below traverse — via
 recursion, which uses the call stack the same way).
+
+```
+   push ──►  ┌──────────────────┐  ◄── pop
+             │  delete paragraph│  top — last in, first out
+             ├──────────────────┤
+             │  bold selection  │
+             ├──────────────────┤
+             │  type 'hello'    │
+             └──────────────────┘  bottom — first in, last out
+```
 
 | Function | What it does |
 |---|---|
@@ -311,6 +419,20 @@ typedef struct GNode {
 } GNode;
 ```
 
+The children aren't a fixed array — they're an ordinary `LLnode` list of `TYPE_PTR` values,
+which is why a node can have any number of them:
+
+```
+   ┌─────────┐  neighbors    ┌────────┐   ┌────────┐   ┌────────┐
+   │  "CEO"  ├──────────────►│ ptr→CTO├──►│ptr→CFO │──►│  NULL  │
+   └─────────┘               └────┬───┘   └───┬────┘   └────────┘
+                                  │           │
+                                  ▼           ▼
+                              ┌───────┐   ┌───────┐
+                              │ "CTO" │   │ "CFO" │
+                              └───────┘   └───────┘
+```
+
 Nodes are looked up by their *value*, not by pointer, using a small registry
 you pass around yourself (no hidden global state).
 
@@ -324,6 +446,28 @@ you pass around yourself (no hidden global state).
 | `GNodeArray *tree_preorder(GNode *root)` | Visit order: node, then each child's subtree, left to right. |
 | `GNodeArray *tree_postorder(GNode *root)` | Visit order: each child's subtree first, then the node. |
 | `GNodeArray *tree_inorder(GNode *root)` | Generalized to N-ary trees: first child's subtree, then the node, then the remaining children. Collapses to the usual left/node/right order for a binary tree. |
+
+The tree built by the example below:
+
+```mermaid
+graph TD
+    CEO["CEO"] --> CTO["CTO"]
+    CEO --> CFO["CFO"]
+    CTO --> BL["Backend Lead"]
+    CTO --> FL["Frontend Lead"]
+
+    style CEO fill:#eff6ff,stroke:#1d4ed8,stroke-width:2px
+    style CTO fill:#ffffff,stroke:#333
+    style CFO fill:#ffffff,stroke:#333
+    style BL fill:#ffffff,stroke:#333
+    style FL fill:#ffffff,stroke:#333
+```
+
+| Traversal | Order on this tree |
+|---|---|
+| **preorder** | `CEO → CTO → Backend Lead → Frontend Lead → CFO` |
+| **postorder** | `Backend Lead → Frontend Lead → CTO → CFO → CEO` |
+| **inorder** | `Backend Lead → CTO → Frontend Lead → CEO → CFO` |
 
 ### Example
 
@@ -404,6 +548,24 @@ up by value yourself.
 | `GNodeArray *graph_bfs(GNode *start)` | Breadth-first traversal from `start` (internally reuses the Queue functions above). |
 | `void print_graph(GNode *start)` | Prints one adjacency line per node reachable from `start`, e.g. `Alice -> [Bob, Carol]`. |
 
+The network built by the example below — note the Alice–Bob–Carol triangle:
+
+```mermaid
+graph LR
+    Alice --- Bob
+    Bob --- Carol
+    Carol --- Alice
+    Bob --- Dave
+
+    style Alice fill:#f0fdf4,stroke:#15803d,stroke-width:2px
+    style Bob fill:#ffffff,stroke:#333
+    style Carol fill:#ffffff,stroke:#333
+    style Dave fill:#ffffff,stroke:#333
+```
+
+> [!WARNING]
+> Traversals only reach nodes **connected to `start`**. With `directed = 1`, `graph_add_edge(a, b, 1)` gives you no path from `b` back to `a` — starting from the wrong end will show you almost nothing.
+
 ### Example
 
 ```c
@@ -482,6 +644,13 @@ their own too:
 
 ## Memory ownership notes
 
+```
+  make_str()  ──►  the node owns the copy   ──►  ll_free_list() frees it
+  pop / dequeue ─►  YOU own the string       ──►  you call free()
+  GNode       ──►  nobody owns it            ──►  you free it manually
+  GNodeArray  ──►  owns its array, not the nodes ─► gnode_array_free()
+```
+
 - `make_str` heap-allocates a copy of the string you pass in. The node owns
   it; `ll_free_list` frees it automatically.
 - If you `ll_pop_beg` / `ll_pop_end` / `dequeue` / `pop` a `TYPE_STR` node,
@@ -498,6 +667,23 @@ their own too:
 - `GNodeArray` results from `tree_preorder`, `graph_bfs`, etc. own their
   internal array but not the `GNode`s it points to — free the array wrapper
   with `gnode_array_free`, and free the nodes separately as above.
+
+<details>
+<summary><b>Tip: lookup keys don't have to allocate</b></summary>
+
+<br>
+
+`make_str` allocates, so a key built with it (`find_node(&reg, TYPE_STR, make_str("CTO"))`)
+leaves a small copy behind on every lookup. In long-running code you can build the key by
+hand instead — `find_node` only reads it:
+
+```c
+Data key;
+key.s_val = "CTO";                 // points at the literal, no allocation
+GNode *cto = find_node(&registry, TYPE_STR, key);
+```
+
+</details>
 
 ---
 
@@ -528,3 +714,8 @@ fix something, feel free to open a pull request.
 ## License
 
 Licensed under the [MIT License](LICENSE) — do what you like with it.
+
+<div align="center">
+<br>
+<sub>Built while learning how data structures actually work underneath.</sub>
+</div>
