@@ -1,6 +1,6 @@
-
-#ignore vs code 
+# ignore vs code
 .vscode/
+
 # Prerequisites
 *.d
 
@@ -53,3 +53,16 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# ---- project-specific ----
+
+# built executables in bin/ -- these are build output, not source
+bin/*.exe
+
+# extended design notes, not tracked
+Documentation/
+
+# visualizer is under active development -- not ready to track yet
+include/visuals.c
+include/visuals.h
+tests/test_visuals.c

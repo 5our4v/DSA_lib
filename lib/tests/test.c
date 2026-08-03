@@ -5,6 +5,14 @@
    checks that every public function in cUtils.h/cUtils.c behaves
    correctly.
 
+   This file only exercises the plain, normal-print functions
+   (ll_peek, display_queue, display_stack, print_tree, print_graph)
+   -- one line of text per call, good for scanning in a log. For a
+   look at the ASCII-art versions of the same structures (boxed
+   diagrams, branching tree, circular graph layout), see the
+   companion file tests_visuals.c, which drives visualizer.h
+   instead.
+
    Every stage is logged in a fixed-width, column-aligned format so
    it stays readable in a normal terminal window:
 
@@ -264,7 +272,7 @@ static void test_linked_list(void) {
     result("list is now %s", buf);
     CHECK(ll_len(&list) == 1 && list->data.i_val == 7, "ll_del_at(0) removes the correct node");
 
-    stage("ll_peek(&list)", "current list -- draws a box diagram");
+    stage("ll_peek(&list)", "current list -- plain print: NULL <-> ... <-> NULL");
     ll_peek(&list);
 
     stage("ll_free_list(&list)", "current list");
@@ -414,7 +422,7 @@ static void test_queue(void) {
     result("dequeued value = %d, queue is now %s", d.i_val, buf);
     CHECK(d.i_val == 2, "dequeue continues to return items in FIFO order");
 
-    stage("display_queue(&q)", "current queue -- draws boxes with FRONT/REAR labels");
+    stage("display_queue(&q)", "current queue -- plain print: Front -> [...] -> Rear");
     display_queue(&q);
 
     ll_free_list(&q);
@@ -465,7 +473,7 @@ static void test_stack(void) {
     result("popped value = %d, stack is now %s", d.i_val, buf);
     CHECK(d.i_val == 2, "pop continues to return items in LIFO order");
 
-    stage("display_stack(&s)", "current stack -- draws stacked boxes with a TOP label");
+    stage("display_stack(&s)", "current stack -- plain print: Top -> [...]");
     display_stack(&s);
 
     ll_free_list(&s);
@@ -514,7 +522,7 @@ static void test_tree(void) {
     result("result = %s", bad == NULL ? "NULL (rejected, as expected)" : "non-NULL (unexpected)");
     CHECK(bad == NULL, "tree_add_node fails gracefully when the parent doesn't exist");
 
-    stage("print_tree(root, 0)", "full tree -- draws a 2D branching diagram");
+    stage("print_tree(root, 0)", "full tree -- plain print: one indented line per node");
     print_tree(root, 0);
 
     stage("tree_preorder(root)", "full tree");
@@ -575,7 +583,7 @@ static void test_graph(void) {
     CHECK(ll_len(&a->neighbors) == 2, "undirected edge updates both endpoints (A has 2 neighbors)");
     CHECK(ll_len(&b->neighbors) == 3, "B ends up connected to A, C, and D");
 
-    stage("print_graph(a)", "graph reachable from A -- draws nodes on a circle with edges");
+    stage("print_graph(a)", "graph reachable from A -- plain print: one adjacency line per node");
     print_graph(a);
 
     stage("graph_dfs(a)", "start node A, graph has a cycle A-B-C-A");
@@ -611,88 +619,6 @@ static void test_graph(void) {
     free(a); free(b); free(c); free(d); free(x); free(y);
 }
 
-/* ================================================================
-   7) Visual gallery -- builds every structure fresh and calls its
-      print function so you can see each one drawn like on paper,
-      with no STAGE/CHECK noise in the way.
-   ================================================================ */
-static void print_subheading(const char *title) {
-    printf("\n--- %s ---\n\n", title);
-}
-
-static void show_visual_gallery(void) {
-    print_section("VISUAL GALLERY -- every structure, drawn like on paper");
-
-    print_subheading("Linked List  (ll_peek)");
-    LLnode *list = NULL;
-    ll_add(&list, TYPE_INT, make_int(5), LL_END);
-    ll_add(&list, TYPE_INT, make_int(10), LL_END);
-    ll_add(&list, TYPE_INT, make_int(20), LL_END);
-    ll_add(&list, TYPE_INT, make_int(35), LL_END);
-    ll_peek(&list);
-    ll_free_list(&list);
-
-    print_subheading("Queue (FIFO)  (display_queue)");
-    LLnode *q = NULL;
-    enqueue(&q, TYPE_INT, make_int(1));
-    enqueue(&q, TYPE_INT, make_int(2));
-    enqueue(&q, TYPE_INT, make_int(3));
-    enqueue(&q, TYPE_INT, make_int(4));
-    display_queue(&q);
-    ll_free_list(&q);
-
-    print_subheading("Stack (LIFO)  (display_stack)");
-    LLnode *s = NULL;
-    push(&s, TYPE_INT, make_int(1));
-    push(&s, TYPE_INT, make_int(2));
-    push(&s, TYPE_INT, make_int(3));
-    display_stack(&s);
-    ll_free_list(&s);
-
-    print_subheading("Tree  (print_tree)");
-    LLnode *registry = NULL;
-    GNode *root = NULL;
-    tree_add_node(&registry, &root, TYPE_INT, make_int(0), make_int(1));
-    tree_add_node(&registry, &root, TYPE_INT, make_int(1), make_int(2));
-    tree_add_node(&registry, &root, TYPE_INT, make_int(1), make_int(3));
-    tree_add_node(&registry, &root, TYPE_INT, make_int(1), make_int(4));
-    tree_add_node(&registry, &root, TYPE_INT, make_int(2), make_int(5));
-    tree_add_node(&registry, &root, TYPE_INT, make_int(2), make_int(6));
-    tree_add_node(&registry, &root, TYPE_INT, make_int(4), make_int(7));
-    print_tree(root, 0);
-
-    // free every tree node's own neighbor list + the node itself,
-    // then the registry (which only owns pointer wrappers)
-    GNodeArray *all_nodes = tree_preorder(root);
-    for (int i = 0; i < all_nodes->count; i++) {
-        ll_free_list(&all_nodes->items[i]->neighbors);
-        free(all_nodes->items[i]);
-    }
-    gnode_array_free(all_nodes);
-    ll_free_list(&registry);
-
-    print_subheading("Graph, with a cycle  (print_graph)");
-    GNode *a = create_gnode(TYPE_CHAR, make_char('A'));
-    GNode *b = create_gnode(TYPE_CHAR, make_char('B'));
-    GNode *c = create_gnode(TYPE_CHAR, make_char('C'));
-    GNode *d = create_gnode(TYPE_CHAR, make_char('D'));
-    GNode *e = create_gnode(TYPE_CHAR, make_char('E'));
-    graph_add_edge(a, b, 0);
-    graph_add_edge(b, c, 0);
-    graph_add_edge(c, d, 0);
-    graph_add_edge(d, e, 0);
-    graph_add_edge(e, a, 0);
-    graph_add_edge(a, c, 0);
-    print_graph(a);
-
-    ll_free_list(&a->neighbors);
-    ll_free_list(&b->neighbors);
-    ll_free_list(&c->neighbors);
-    ll_free_list(&d->neighbors);
-    ll_free_list(&e->neighbors);
-    free(a); free(b); free(c); free(d); free(e);
-}
-
 /* ================================================================ */
 
 int main(void) {
@@ -704,8 +630,6 @@ int main(void) {
     test_stack();
     test_tree();
     test_graph();
-
-    show_visual_gallery();
 
     printf("\n");
     print_rule('=');
