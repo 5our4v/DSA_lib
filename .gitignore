@@ -1,68 +1,35 @@
-# ignore vs code
-.vscode/
+# Auto detect text files and normalize line endings to LF in the repo
+* text=auto eol=lf
 
-# Prerequisites
-*.d
+# ---- Source code: always treat as text, normalize line endings ----
+*.c   text diff=cpp
+*.h   text diff=cpp
+*.md  text
+*.txt text
+*.ps1 text eol=crlf
 
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
+# ---- Config / misc text files ----
+.gitattributes text export-ignore
+.gitignore     text export-ignore
+LICENSE        text
+README.md      text
 
-# Linker output
-*.ilk
-*.map
-*.exp
+# ---- Binary files: never touch line endings, no text diff ----
+*.exe  binary
+*.dll  binary
+*.so   binary
+*.dylib binary
+*.lib  binary
+*.a    binary
+*.o    binary
+*.obj  binary
+*.pdb  binary
+*.pdf  binary
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
 
-# Precompiled Headers
-*.gch
-*.pch
-
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
-
-# Executables
-#*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
-
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
-
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
-
-# ---- project-specific ----
-
-# built executables in bin/ -- these are build output, not source
-bin/*.exe
-
-# extended design notes, not tracked
-Documentation/
-
-# visualizer is under active development -- not ready to track yet
-include/visuals.c
-include/visuals.h
-tests/test_visuals.c
+# ---- Linguist hints (GitHub language stats) ----
+*.c linguist-language=C
+*.h linguist-language=C
